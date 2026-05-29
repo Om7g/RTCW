@@ -10,6 +10,8 @@ import {
 } from '../utils/element';
 import getStroke from 'perfect-freehand';
 import { updateCanvas } from '../utils/api';
+import { socket } from '../socket';
+
 
 const boardReducer = (state, action) => {
   switch (action.type) {
@@ -18,6 +20,14 @@ const boardReducer = (state, action) => {
         ...state,
         activeToolItem: action.payload.tool,
       };
+
+    case BOARD_ACTIONS.LOAD_ELEMENTS: { //////////// given by claude
+      return {
+        ...state,
+        elements: action.payload.elements,
+        history: [action.payload.elements],
+        index: 0,
+      };}
 
     case BOARD_ACTIONS.CHANGE_ACTION_TYPE:
       return {
@@ -170,15 +180,33 @@ const BoardProvider = ({ children, initialElements = [] }) => {
   );
 
   // Debounce and sync to backend after undo/redo or any changes
-  useEffect(() => {
-    if (!canvasId || !token) return;
+  // useEffect(() => {
+  //   if (!canvasId || !token) return;
 
-    const debounce = setTimeout(() => {
-      updateCanvas(canvasId, boardState.elements, token);
-    }, 800); // adjust debounce time if needed
+  //   const debounce = setTimeout(() => {
+  //     updateCanvas(canvasId, boardState.elements, token);
+  //   }, 800); // adjust debounce time if needed
+
+  //   return () => clearTimeout(debounce);
+  // }, [boardState.elements, canvasId, token]);
+
+  useEffect(() => {
+  if (!canvasId || !token) return;
+
+  const debounce = setTimeout(() => {
+    // Emit to other users via socket
+    console.log("EMITTING drawingUpdate, elements:", boardState.elements.length);
+    socket.emit("drawingUpdate", { canvasId, elements: boardState.elements });
+    // Also save to DB
+    updateCanvas(canvasId, boardState.elements, token);
+    }, 300);
 
     return () => clearTimeout(debounce);
   }, [boardState.elements, canvasId, token]);
+
+
+
+
   const changeToolHandler = (tool) => {
     dispatchBoardAction({
       type: BOARD_ACTIONS.CHANGE_TOOL,
@@ -261,18 +289,21 @@ const BoardProvider = ({ children, initialElements = [] }) => {
     });
   };
   const boardContextValue = {
-
-    activeToolItem: boardState.activeToolItem,
-    elements: boardState.elements,
-    toolActionType: boardState.toolActionType,
-    changeToolHandler,
-    boardMouseDownHandler,
-    boardMouseMoveHandler,
-    boardMouseUpHandler,
-    textAreaBlurHandler,
-    undo: boardUndoHandler,
-    redo: boardRedoHandler,
-  };
+  activeToolItem: boardState.activeToolItem,
+  elements: boardState.elements,
+  toolActionType: boardState.toolActionType,
+  changeToolHandler,
+  boardMouseDownHandler,
+  boardMouseMoveHandler,
+  boardMouseUpHandler,
+  textAreaBlurHandler,
+  undo: boardUndoHandler,
+  redo: boardRedoHandler,
+  loadRemoteElements: (elements) => dispatchBoardAction({
+    type: BOARD_ACTIONS.LOAD_ELEMENTS,
+    payload: { elements }
+  }),
+};
 
   return (
     <boardContext.Provider value={boardContextValue}>

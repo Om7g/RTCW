@@ -29,16 +29,16 @@ const Toolbar = () => {
     useContext(boardContext);
 
   const containerClasses =
-    "absolute left-1/2 top-5 px-4 py-2 flex gap-2 rounded-2xl border border-gray-600 backdrop-blur-md bg-white/10 shadow-lg z-50";
+    "absolute left-1/2 top-5 px-4 py-2 flex gap-2 rounded-2xl border border-gray-600 backdrop-blur-md bg-white shadow-lg z-50";
 
   const toolItemClasses =
-    "flex justify-center items-center text-xl p-3 text-white transition-all duration-150 ease-in-out cursor-pointer rounded-xl";
+    "flex justify-center items-center text-xl p-3 text-gray-900 transition-all duration-150 ease-in-out cursor-pointer rounded-xl";
 
   const hoverClasses =
-    "hover:bg-white/20 hover:scale-110";
+    "hover: hover:scale-140";
 
   const activeClasses =
-    "bg-white/30 scale-110 shadow-inner text-blue-300";
+    "bg-blue-100 scale-110 shadow-inner text-black-300";
 
   const tools = [
     { id: TOOL_ITEMS.RECTANGLE, icon: <RiRectangleLine /> },

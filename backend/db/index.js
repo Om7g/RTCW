@@ -1,5 +1,6 @@
-const mongoose=require("mongoose")
-require("dotenv").config();
+import mongoose from "mongoose"
+import dotenv from "dotenv";
+dotenv.config();
 
 const database_url=process.env.DATABASE_URL;
 
@@ -11,10 +12,10 @@ const connectionParams = {
 const connectToDatabase=async()=>{
     try{
         await mongoose.connect(database_url,connectionParams);
-        console.log("Connect to database");
+        console.log("Connect to databaseeeee");
     }catch(error){
         console.error("Error connecting to database :",error);
     }
 }
 
-module.exports=connectToDatabase;
+export default connectToDatabase;

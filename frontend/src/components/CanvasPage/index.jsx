@@ -11,6 +11,7 @@ import axios from "axios";
 import { getSvgPathFromStroke } from "../../utils/element";
 import getStroke from "perfect-freehand";
 import { socket } from "../../socket";
+import boardContext from "../../store/board-context";
 
 const rehydrateElements = (elements) => {
   return elements.map((el) => {
@@ -22,50 +23,65 @@ const rehydrateElements = (elements) => {
   });
 };
 
+function SocketSync() {
+  const { loadRemoteElements } = useContext(boardContext);
+
+  useEffect(() => {
+    socket.off("receiveDrawingUpdate");
+    socket.on("receiveDrawingUpdate", (updatedElements) => {
+      console.log("RECEIVED DRAWING UPDATE:", updatedElements.length);
+      loadRemoteElements(rehydrateElements(updatedElements));
+    });
+  }, [loadRemoteElements]);
+
+  return null;
+}
+
 function CanvasPage() {
   const { canvasId } = useParams();
-  const [canvas, setCanvas] = useState({});
+  const [canvas, setCanvas] = useState(null);
   const { token } = useContext(AuthContext);
 
   useEffect(() => {
     if (!canvasId || !token) return;
 
+    // disconnect first to force a clean reconnect
+    socket.disconnect();
+    socket.off();
+
+    socket.auth = { token };
+
+    socket.on("connect", () => {
+      console.log("SOCKET CONNECTED:", socket.id);
+      socket.emit("joinCanvas", { canvasId });
+    });
+
+    socket.on("connect_error", (err) => {
+      console.log("SOCKET CONNECTION ERROR:", err.message);
+    });
+
+    socket.on("unauthorized", (msg) => {
+      console.log("SOCKET UNAUTHORIZED:", msg);
+    });
+
+    socket.on("loadCanvas", (elements) => {
+      console.log("LOAD CANVAS RECEIVED:", elements.length);
+      setCanvas((prev) => ({
+        ...prev,
+        elements: rehydrateElements(elements),
+      }));
+    });
+
     const fetchCanvas = async () => {
       try {
         const response = await axios.get(
           `http://localhost:8000/api/canvas/load/${canvasId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
-
         const initialElements = rehydrateElements(response.data.elements);
         setCanvas({ ...response.data, elements: initialElements });
 
-        // Send token for socket auth
-        socket.auth = { token };
-        socket.connect();
-
-        socket.emit("joinCanvas", { canvasId });
-
-        // Clear previous listeners (to avoid stacking)
-        socket.off("loadCanvas");
-        socket.off("receiveDrawingUpdate");
-
-        socket.on("loadCanvas", (elements) => {
-          setCanvas((prev) => ({
-            ...prev,
-            elements: rehydrateElements(elements),
-          }));
-        });
-
-        socket.on("receiveDrawingUpdate", (updatedElements) => {
-          setCanvas((prev) => ({
-            ...prev,
-            elements: rehydrateElements(updatedElements),
-          }));
-        });
-
+        socket.connect(); // connect AFTER listeners are set up
       } catch (error) {
         console.error("Failed to load Canvas", error);
       }
@@ -75,6 +91,7 @@ function CanvasPage() {
 
     return () => {
       socket.disconnect();
+      socket.off();
     };
   }, [canvasId, token]);
 
@@ -86,6 +103,7 @@ function CanvasPage() {
     <div>
       <BoardProvider initialElements={canvas.elements}>
         <ToolboxProvider>
+          <SocketSync />
           <Toolbar />
           <Toolbox />
           <Board />

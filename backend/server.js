@@ -51,18 +51,14 @@ io.on("connection", (socket) => {
   socket.on("joinCanvas", async ({ canvasId }) => {
     console.log("Joining canvas:", canvasId);
     try {
-      const authHeader = socket.handshake.headers.authorization;
-      if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        console.log("No token provided.");
-        setTimeout(() => {
+      const token = socket.handshake.auth.token;
+        if (!token) {
           socket.emit("unauthorized", { message: "Access Denied: No Token" });
-        }, 100);
-        return;
-      }
+          return;
+        }
 
-      const token = authHeader.split(" ")[1];
       const decoded = jwt.verify(token, SECRET_KEY);
-      const userId = decoded.userId;
+      const userId = decoded.id;
       console.log("User ID:", userId);
 
       const canvas = await Canvas.findById(canvasId);

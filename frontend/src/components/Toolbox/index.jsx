@@ -21,7 +21,7 @@ const Toolbox = () => {
 
   return (
     <div
-      className="absolute top-1/2 left-5 text-sm px-5 py-4 rounded-2xl shadow-lg border border-gray-600 bg-white/10 backdrop-blur-md text-white space-y-6 z-50"
+      className="absolute top-1/2 left-5 text-sm px-5 py-4 rounded-2xl shadow-lg border border-gray-600 bg-black/ backdrop-blur-md text-black space-y-6 z-50"
       style={{ transform: "translateY(-50%)" }}
     >
       {/* Stroke */}
@@ -40,8 +40,8 @@ const Toolbox = () => {
               <div
                 key={k}
                 className={clsx(
-                  "inline-block w-5 h-5 rounded-full border border-white/20 cursor-pointer transition hover:scale-110",
-                  strokeColor === COLORS[k] && "ring-2 ring-blue-400"
+                  "inline-block w-5 h-5 rounded-full border border-black/40 cursor-pointer transition hover:scale-110",
+                  strokeColor === COLORS[k] && "ring-2 ring-blue-500"
                 )}
                 style={{ backgroundColor: COLORS[k] }}
                 onClick={() => changeStroke(activeToolItem, COLORS[k])}
@@ -91,7 +91,7 @@ const Toolbox = () => {
               <div
                 key={k}
                 className={clsx(
-                  "inline-block w-5 h-5 rounded-full border border-white/20 cursor-pointer transition hover:scale-110",
+                  "inline-block w-5 h-5 rounded-full border border-black/20 cursor-pointer transition hover:scale-110",
                   fillColor === COLORS[k] && "ring-2 ring-blue-400"
                 )}
                 style={{ backgroundColor: COLORS[k] }}
@@ -115,7 +115,7 @@ const Toolbox = () => {
             step={1}
             value={size}
             onChange={(e) => changeSize(activeToolItem, e.target.value)}
-            className="w-full h-2 bg-white/20 rounded-lg appearance-none cursor-pointer"
+            className="w-full h-2 bg-black/20 rounded-lg appearance-none cursor-pointer"
           />
         </div>
       )}
