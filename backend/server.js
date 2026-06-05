@@ -37,7 +37,7 @@ app.post("/test", (req, res) => {
 const server = http.createServer(app);
 const io = new SocketIOServer(server, {
   cors: {
-    origin: ["http://localhost:3000", "https://whiteboard-tutorial-eight.vercel.app"],
+    origin: ["http://localhost:5173"],
     methods: ["GET", "POST"]
   }
 });
@@ -103,6 +103,9 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(8000, () => {
-  console.log("Server running on http://localhost:8000");
+
+  const PORT = process.env.PORT || 5000;
+
+server.listen(PORT, () => {
+  console.log(`Server running on port : ${PORT}`);
 });

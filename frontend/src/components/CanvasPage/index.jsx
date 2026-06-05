@@ -75,7 +75,7 @@ function CanvasPage() {
     const fetchCanvas = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/canvas/load/${canvasId}`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/canvas/load/${canvasId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         const initialElements = rehydrateElements(response.data.elements);

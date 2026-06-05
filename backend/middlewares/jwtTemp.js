@@ -1,7 +1,7 @@
 const jwt=require("jsonwebtoken");
 const user={
     id:123,
-    name:"Samyak",
+    name:"Om",
     password:"12345",
 };
 const secretKey="mySecret";
