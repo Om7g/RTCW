@@ -24,7 +24,7 @@ function DashBoard() {
     const fetchUser = async () => {
       try {
         console.log(token);
-        const res = await fetch(`http://${import.meta.env.VITE_BACKEND_URL}/api/users/profile`, {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
@@ -38,7 +38,7 @@ function DashBoard() {
     const fetchCanvases = async () => {
       try {
         console.log(token);
-        const res = await fetch(`http://${import.meta.env.VITE_BACKEND_URL}/api/canvas/list`, {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/canvas/list`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
@@ -62,7 +62,7 @@ function DashBoard() {
     if (!newCanvasName.trim()) return;
 
     try {
-      const res = await fetch(`http://${import.meta.env.VITE_BACKEND_URL}/api/canvas/create`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/canvas/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -85,7 +85,7 @@ function DashBoard() {
 
   const handleDeleteCanvas = async (id) => {
     try {
-      const res = await fetch(`http://${import.meta.env.VITE_BACKEND_URL}/api/canvas/delete/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/canvas/delete/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -107,7 +107,7 @@ function DashBoard() {
     if (!email) return;
 
     try {
-      const res = await fetch(`http://${import.meta.env.VITE_BACKEND_URL}/api/canvas/share/${canvasId}`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/canvas/share/${canvasId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

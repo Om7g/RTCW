@@ -1,5 +1,5 @@
 // import {io} from "socket.io-client"
-const API_BASE_URL = `http://${import.meta.env.VITE_BACKEND_URL}/api/canvas`;
+const API_BASE_URL = `${import.meta.env.VITE_BACKEND_URL}/api/canvas`;
 
 // Accept token and canvasId as arguments
 export const updateCanvas = async (canvasId, elements, token) => {
